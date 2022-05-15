@@ -11,7 +11,7 @@ namespace Galera
 {
 	public static class NameHelper
 	{
-		public static SortedSet<char> InvalidChars = new() { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+		private static readonly SortedSet<char> _invalidChars = new() { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
 
 		public static Command WithHandler(this Command command, ICommandHandler handler)
 		{
@@ -24,7 +24,7 @@ namespace Galera
 			Span<char> correctFileName = stackalloc char[fileName.Length];
 			fileName.CopyTo(correctFileName);
 			for (int i = 0; i < correctFileName.Length; i++)
-				if (InvalidChars.Contains(correctFileName[i]))
+				if (_invalidChars.Contains(correctFileName[i]))
 					correctFileName[i] = '_';
 
 			var endsInSeparator = Path.EndsInDirectorySeparator(folderPath);
