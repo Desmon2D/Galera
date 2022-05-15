@@ -61,6 +61,8 @@ namespace Galera
 				folderPath = ".\\";
 			Directory.CreateDirectory(folderPath);
 
+			var downloadTasks = new List<Task>(10);
+
 			await foreach (var video in videos)
 			{
 				try
@@ -92,7 +94,11 @@ namespace Galera
 					if (File.Exists(path))
 						throw new ArgumentException("File already exists");
 
-					await _client.Videos.Streams.DownloadAsync(streamInfo, path);
+					var rs = await _client.Videos.Streams.GetAsync(streamInfo);
+					var ws = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+					var task = rs.CopyToAsync(ws);
+					downloadTasks.Add(task);
+
 					Console.WriteLine($@"Done ""{video.Title}""");
 					downloaded++;
 				}
@@ -101,6 +107,8 @@ namespace Galera
 					Console.WriteLine($@"Error ""{video.Title}"" - {e.Message}");
 					errors++;
 				}
+
+				await Task.WhenAll(downloadTasks);
 			}
 			
 			return new(downloaded, errors);
