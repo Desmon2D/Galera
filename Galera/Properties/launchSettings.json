@@ -2,7 +2,7 @@
   "profiles": {
     "Galera": {
       "commandName": "Project",
-      "commandLineArgs": "playlist -h"
+      "commandLineArgs": "-h"
     }
   }
 }

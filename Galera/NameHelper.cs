@@ -25,9 +25,6 @@ namespace Galera
 				if (correctFileName[i] == '\\' || correctFileName[i] == '|')
 					correctFileName[i] = '_';
 
-			if (string.IsNullOrEmpty(folderPath))
-				folderPath = ".\\";
-
 			var endsInSeparator = Path.EndsInDirectorySeparator(folderPath);
 			var additionalChar = endsInSeparator ? 0 : 1;
 

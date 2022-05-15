@@ -17,6 +17,9 @@ namespace Galera
 		public static async Task<string> DownloadVideoAsync(string link, string folderPath, BitrateSort bitrate, Extension extension, StreamType streamType)
 		{
 			var videoTask = _client.Videos.GetAsync(link);
+
+			if (string.IsNullOrEmpty(folderPath))
+				folderPath = ".\\";
 			Directory.CreateDirectory(folderPath);
 
 			var manifest = await _client.Videos.Streams.GetManifestAsync(link);
@@ -54,6 +57,8 @@ namespace Galera
 			var errors = 0;
 			var videos = _client.Playlists.GetVideosAsync(link);
 
+			if (string.IsNullOrEmpty(folderPath))
+				folderPath = ".\\";
 			Directory.CreateDirectory(folderPath);
 
 			await foreach (var video in videos)
