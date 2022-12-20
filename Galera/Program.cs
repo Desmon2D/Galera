@@ -47,6 +47,7 @@ static Command BuildVideoCommand()
 			Console.WriteLine($"error | {e.Message}");
 		}
 	}, linkArgument, outputOption, bitrateOption, extensionOption, streamTypeOption);
+
 	return command;
 }
 

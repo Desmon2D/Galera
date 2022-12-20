@@ -23,13 +23,7 @@ namespace Galera
 			Directory.CreateDirectory(folderPath);
 
 			var manifest = await _client.Videos.Streams.GetManifestAsync(link);
-			IEnumerable<IStreamInfo> streams = streamType switch
-			{
-				StreamType.muxed => manifest.GetMuxedStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
-				StreamType.video_only => manifest.GetVideoOnlyStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
-				StreamType.audio_only => manifest.GetAudioOnlyStreams(),
-				_ => throw new NotImplementedException()
-			};
+			IEnumerable<IStreamInfo> streams = manifest.GetStreams(streamType);
 
 			if (extension != Extension.any)
 				streams = streams.Where(a => a.Container.Name == extension.ToString()).AsEnumerable();
@@ -70,13 +64,7 @@ namespace Galera
 					Console.WriteLine($@"Downloading ""{video.Title}""");
 
 					var manifest = await _client.Videos.Streams.GetManifestAsync(video.Id);
-					IEnumerable<IStreamInfo> streams = streamType switch
-					{
-						StreamType.muxed => manifest.GetMuxedStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
-						StreamType.video_only => manifest.GetVideoOnlyStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
-						StreamType.audio_only => manifest.GetAudioOnlyStreams(),
-						_ => throw new NotImplementedException()
-					};
+					IEnumerable<IStreamInfo> streams = manifest.GetStreams(streamType);
 
 					if (extension != Extension.any)
 						streams = streams.Where(a => a.Container.Name == extension.ToString()).AsEnumerable();
@@ -102,7 +90,7 @@ namespace Galera
 					Console.WriteLine($@"Done ""{video.Title}""");
 					downloaded++;
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					Console.WriteLine($@"Error ""{video.Title}"" - {e.Message}");
 					errors++;
@@ -112,6 +100,17 @@ namespace Galera
 			}
 			
 			return new(downloaded, errors);
+		}
+
+		private static IEnumerable<IStreamInfo> GetStreams(this StreamManifest manifest, StreamType streamType)
+		{
+			return streamType switch
+			{
+				StreamType.muxed => manifest.GetMuxedStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
+				StreamType.video_only => manifest.GetVideoOnlyStreams().OrderBy(a => a.VideoResolution.Area).ThenBy(a => a.Bitrate).AsEnumerable(),
+				StreamType.audio_only => manifest.GetAudioOnlyStreams(),
+				_ => throw new NotImplementedException()
+			};
 		}
 	}
 }
