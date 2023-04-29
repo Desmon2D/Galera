@@ -4,7 +4,7 @@ using System.CommandLine;
 using Galera;
 using Galera.Enums;
 
-var cmd = new RootCommand($"Galera v0.2.2")
+var cmd = new RootCommand($"Galera v0.3.0")
 {
 	BuildVideoCommand(),
 	BuildPlaylistCommand()
